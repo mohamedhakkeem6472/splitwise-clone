@@ -1,4 +1,4 @@
-package com.example.expensesharing.model;
+package com.example.splitwise.model;
 
 import jakarta.persistence.*;
 import lombok.*;
