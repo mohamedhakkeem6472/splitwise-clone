@@ -14,7 +14,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody GroupRequest request) {
         Group group = groupService.createGroup(request);
         return ResponseEntity.ok(group);
