@@ -1,58 +1,39 @@
-package com.example.splitwise.config;
+package com.example.splitwise.service;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.web.SecurityFilterChain;
+import com.example.splitwise.model.User;
+import com.example.splitwise.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-@Configuration
-@EnableMethodSecurity
-public class SecurityConfig {
+import java.util.Optional;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .oauth2Login()
-            .and()
-            .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
+@Service
+@RequiredArgsConstructor
+public class AuthService {
 
-        return http.build();
-    }
-    
-    
+    private final UserRepository userRepository;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    
-    //Dummy data
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        ClientRegistration registration = ClientRegistration.withRegistrationId("google")
-                .clientId("dummy-client-id")
-                .clientSecret("dummy-client-secret")
-                .authorizationGrantType(org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE) // 👈 FIXED
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
-                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
-                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-                .userNameAttributeName("sub")
-                .clientName("Google")
-                .scope("openid", "profile", "email")
-                .build();
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public User loadOrCreateUser(OAuth2User oAuth2User) {
+        String oauthId = oAuth2User.getName();
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
 
-        return new InMemoryClientRegistrationRepository(registration);
+        User user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            return user;
+        } else {
+            User newUser = User.builder()
+                    .oauthId(oauthId)
+                    .email(email)
+                    .name(name)
+                    .role(User.Role.USER)
+                    .build();
+            return userRepository.save(newUser);
+        }
     }
 }
