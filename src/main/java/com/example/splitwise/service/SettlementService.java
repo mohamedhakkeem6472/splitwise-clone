@@ -14,42 +14,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-/**
- * Service for handling settlements between users.
- */
 @Service
 @RequiredArgsConstructor
 public class SettlementService {
 
     private final SettlementRepository settlementRepository;
-    private final ExpenseRepository expenseRepository;
     private final UserRepository userRepository;
+    private final ExpenseRepository expenseRepository;
     private final BalanceService balanceService;
 
-    /**
-     * Settles a payment between two users.
-     * Uses SERIALIZABLE isolation to prevent double settlements.
-     */
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
-    public Settlement settleBalance(Long payerId, Long receiverId, BigDecimal amount, Long expenseId) {
+    public Settlement settleAmount(Long expenseId, Long payerId, Long receiverId, BigDecimal amount) {
 
-        User payer = userRepository.findById(payerId)
-                .orElseThrow(() -> new IllegalArgumentException("Payer not found"));
-        User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Receiver not found"));
-        Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
-
-        // Adjust balances
-        balanceService.updateBalanceAfterSettlement(payer, receiver, amount);
+        Expense expense = expenseRepository.findById(expenseId).orElseThrow();
+        User payer = userRepository.findById(payerId).orElseThrow();
+        User receiver = userRepository.findById(receiverId).orElseThrow();
 
         Settlement settlement = Settlement.builder()
+                .expense(expense)
                 .payer(payer)
                 .receiver(receiver)
-                .expense(expense)
                 .amount(amount)
                 .build();
 
-        return settlementRepository.save(settlement);
+        Settlement saved = settlementRepository.save(settlement);
+
+        balanceService.updateBalanceAfterSettlement(payer, receiver, amount);
+
+        return saved;
     }
 }
