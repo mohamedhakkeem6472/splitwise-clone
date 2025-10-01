@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -20,13 +22,18 @@ public class AuthService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        return userRepository.findByEmail(email).orElseGet(() ->
-            userRepository.save(User.builder()
+        User user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            return user;
+        } else {
+            User newUser = User.builder()
                     .oauthId(oauthId)
                     .email(email)
                     .name(name)
                     .role(User.Role.USER)
-                    .build())
-        );
+                    .build();
+            return userRepository.save(newUser);
+        }
     }
 }
