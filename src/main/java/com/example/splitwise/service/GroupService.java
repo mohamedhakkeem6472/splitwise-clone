@@ -14,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Service for managing groups.
- */
 @Service
 @RequiredArgsConstructor
 public class GroupService {
@@ -24,30 +21,16 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
-    /**
-     * Creates a new group with given members.
-     * Uses SERIALIZABLE isolation to prevent concurrent modifications.
-     */
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public Group createGroup(GroupRequest request) {
         Set<User> members = new HashSet<>(userRepository.findAllById(request.getMemberIds()));
+        if (members.isEmpty()) throw new IllegalArgumentException("Group must have at least one member");
 
-        if (members.isEmpty()) {
-            throw new IllegalArgumentException("Group must have at least one member");
-        }
-
-        Group group = Group.builder()
-                .name(request.getName())
-                .members(members)
-                .build();
-
+        Group group = Group.builder().name(request.getName()).members(members).build();
         return groupRepository.save(group);
     }
 
-    /**
-     * Fetch a group by ID in READ_ONLY mode.
-     */
-    @Transactional(isolation = Isolation.REPEATABLE_READ, readOnly = true)
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.SUPPORTS, readOnly = true)
     public Group getGroup(Long groupId) {
         return groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found: " + groupId));
