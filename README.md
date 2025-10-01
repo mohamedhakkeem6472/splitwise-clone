@@ -54,18 +54,18 @@ Password: (empty)
 API Endpoints (Sample)
 Groups
 
-POST /groups - Create group
+POST /groups/create - Create group
 
 GET /groups/{id} - Get group details
 
 Expenses
 
-POST /expenses - Add expense
+POST /expenses/create - Add expense
 
 GET /expenses/{id} - Get expense details
 
 Settlements
 
-POST /settlements - Settle payment
+POST /settlements/settle - Settle payment
 git clone <YOUR_REPO_URL>
 cd splitwise
