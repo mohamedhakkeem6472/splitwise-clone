@@ -16,7 +16,7 @@ public class SettlementController {
 
     private final SettlementService settlementService;
 
-    @PostMapping
+    @PostMapping("/settle")
     public ResponseEntity<Settlement> settleAmount(@RequestBody SettlementRequest request) {
         Settlement settlement = settlementService.settleAmount(
                 request.getExpenseId(),
