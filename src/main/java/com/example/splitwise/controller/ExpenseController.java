@@ -14,7 +14,7 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest request) {
         Expense expense = expenseService.createExpense(
                 request.getGroupId(),
