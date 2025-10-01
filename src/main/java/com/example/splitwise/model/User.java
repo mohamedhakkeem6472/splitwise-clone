@@ -5,11 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
 
     @Id
@@ -17,11 +16,7 @@ public class User {
     private Long id;
 
     private String name;
-
-    @Column(unique = true, nullable = false)
     private String email;
-
-    @Column(unique = true, nullable = false)
     private String oauthId;
 
     @Enumerated(EnumType.STRING)
