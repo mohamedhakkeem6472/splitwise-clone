@@ -3,16 +3,14 @@ package com.example.splitwise.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "groups")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Group {
 
     @Id
@@ -21,12 +19,6 @@ public class Group {
 
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "group_users",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    @Builder.Default
-    private Set<User> members = new HashSet<>();
+    @ManyToMany
+    private Set<User> members;
 }
