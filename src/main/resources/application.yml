@@ -20,7 +20,7 @@ spring:
       path: /h2-console
 
 # OAuth2 Google Login
-spring:
+springOauth:
   security:
     oauth2:
       client:
