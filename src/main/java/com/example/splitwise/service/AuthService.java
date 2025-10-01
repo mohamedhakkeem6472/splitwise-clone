@@ -8,19 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service for authentication and registration via OAuth2.
- */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
 
-    /**
-     * Loads or creates a user from OAuth2 login.
-     * Runs in REQUIRES_NEW to isolate user creation from other transactions.
-     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public User loadOrCreateUser(OAuth2User oAuth2User) {
         String oauthId = oAuth2User.getName();
