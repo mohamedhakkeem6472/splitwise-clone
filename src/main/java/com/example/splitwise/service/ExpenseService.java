@@ -46,7 +46,7 @@ public class ExpenseService {
         return savedExpense;
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(isolation = Isolation.REPEATABLE_READ, readOnly = true)
     public Map<User, Double> calculateShares(Group group, double totalAmount, Map<Long, Double> customShares) {
         Map<User, Double> shares = new HashMap<>();
         if (customShares != null && !customShares.isEmpty()) {
