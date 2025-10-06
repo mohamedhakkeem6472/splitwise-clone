@@ -18,7 +18,7 @@ public class BalanceService {
 
     private final UserBalanceRepository userBalanceRepository;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateBalance(Group group, User paidBy, User owedBy, double amount) {
         if (paidBy.equals(owedBy)) return;
 
@@ -35,7 +35,7 @@ public class BalanceService {
         userBalanceRepository.save(balance);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateBalanceAfterSettlement(User payer, User receiver, BigDecimal amount) {
         UserBalance balance = userBalanceRepository
                 .findByUserAndCounterUser(payer, receiver)
