@@ -30,7 +30,7 @@ public class GroupService {
         return groupRepository.save(group);
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.SUPPORTS, readOnly = true)
+    @Transactional(isolation = Isolation.REPEATABLE_READ,  readOnly = true)
     public Group getGroup(Long groupId) {
         return groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found: " + groupId));
