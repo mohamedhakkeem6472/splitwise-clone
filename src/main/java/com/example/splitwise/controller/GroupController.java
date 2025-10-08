@@ -5,6 +5,7 @@ import com.example.splitwise.model.Group;
 import com.example.splitwise.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,12 +15,16 @@ public class GroupController {
 
     private final GroupService groupService;
 
+    // Only users with ADMIN or MANAGER roles can create groups
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody GroupRequest request) {
         Group group = groupService.createGroup(request);
         return ResponseEntity.ok(group);
     }
 
+    // All authenticated users (ADMIN, MANAGER, USER) can view group
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<Group> getGroup(@PathVariable Long id) {
         Group group = groupService.getGroup(id);
