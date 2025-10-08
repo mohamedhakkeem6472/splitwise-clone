@@ -16,7 +16,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional()
     public User loadOrCreateUser(OAuth2User oAuth2User) {
         String oauthId = oAuth2User.getName();
         String email = oAuth2User.getAttribute("email");
