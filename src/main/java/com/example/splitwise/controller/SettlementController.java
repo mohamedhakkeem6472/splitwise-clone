@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @RequestMapping("/settlements")
 @RequiredArgsConstructor
 public class SettlementController {
-
+    @Autowired
     private final SettlementService settlementService;
 
     @PostMapping("/settle")
