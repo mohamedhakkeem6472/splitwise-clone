@@ -16,7 +16,7 @@ public class GroupController {
     private final GroupService groupService;
 
     // Only users with ADMIN or MANAGER roles can create groups
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody GroupRequest request) {
         Group group = groupService.createGroup(request);
@@ -24,7 +24,7 @@ public class GroupController {
     }
 
     // All authenticated users (ADMIN, MANAGER, USER) can view group
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<Group> getGroup(@PathVariable Long id) {
         Group group = groupService.getGroup(id);
